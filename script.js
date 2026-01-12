@@ -532,7 +532,7 @@ virtualJoystick.addEventListener('touchstart', (e) => {
     joystickStartX = rect.left + rect.width / 2;
     joystickStartY = rect.top + rect.height / 2;
     updateJoystick(touch.clientX, touch.clientY);
-});
+}, { passive: false });
 
 virtualJoystick.addEventListener('touchmove', (e) => {
     e.preventDefault();
@@ -540,7 +540,7 @@ virtualJoystick.addEventListener('touchmove', (e) => {
         const touch = e.touches[0];
         updateJoystick(touch.clientX, touch.clientY);
     }
-});
+}, { passive: false });
 
 virtualJoystick.addEventListener('touchend', (e) => {
     e.preventDefault();
@@ -551,7 +551,18 @@ virtualJoystick.addEventListener('touchend', (e) => {
     // スティックを中央に戻す
     joystickStick.style.left = '40px';
     joystickStick.style.top = '40px';
-});
+}, { passive: false });
+
+virtualJoystick.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    joystickActive = false;
+    input.moveX = 0;
+    input.moveY = 0;
+
+    // スティックを中央に戻す
+    joystickStick.style.left = '40px';
+    joystickStick.style.top = '40px';
+}, { passive: false });
 
 function updateJoystick(touchX, touchY) {
     const dx = touchX - joystickStartX;
@@ -581,12 +592,17 @@ const shootBtn = document.getElementById('shoot-btn');
 shootBtn.addEventListener('touchstart', (e) => {
     e.preventDefault();
     input.shooting = true;
-});
+}, { passive: false });
 
 shootBtn.addEventListener('touchend', (e) => {
     e.preventDefault();
     input.shooting = false;
-});
+}, { passive: false });
+
+shootBtn.addEventListener('touchcancel', (e) => {
+    e.preventDefault();
+    input.shooting = false;
+}, { passive: false });
 
 // ========================================
 // UI更新
