@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>TATESHOOT - 縦スクロールシューティング</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <!-- ゲームキャンバス -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- UI レイヤー -->
+        <div id="ui-layer">
+            <!-- スコアとライフ表示 -->
+            <div id="hud">
+                <div id="score">SCORE: <span id="score-value">0</span></div>
+                <div id="lives">LIFE: <span id="lives-value">3</span></div>
+                <button id="pause-btn">PAUSE</button>
+            </div>
+
+            <!-- タッチコントロール（スマホ用） -->
+            <div id="touch-controls">
+                <!-- 左側：移動用バーチャルスティック -->
+                <div id="virtual-joystick">
+                    <div id="joystick-base"></div>
+                    <div id="joystick-stick"></div>
+                </div>
+
+                <!-- 右側：ショットボタン -->
+                <button id="shoot-btn">SHOT</button>
+            </div>
+        </div>
+
+        <!-- ゲームオーバー画面 -->
+        <div id="game-over-screen" class="screen hidden">
+            <h1>GAME OVER</h1>
+            <p>FINAL SCORE: <span id="final-score">0</span></p>
+            <button id="restart-btn">RESTART</button>
+        </div>
+
+        <!-- スタート画面 -->
+        <div id="start-screen" class="screen">
+            <h1>TATESHOOT</h1>
+            <p class="subtitle">縦スクロールシューティング</p>
+            <div class="instructions">
+                <h2>操作方法</h2>
+                <div class="control-section">
+                    <h3>スマートフォン</h3>
+                    <p>左側：移動スティック</p>
+                    <p>右側：ショットボタン（押しっぱなしで連射）</p>
+                </div>
+                <div class="control-section">
+                    <h3>キーボード</h3>
+                    <p>移動：矢印キー または WASD</p>
+                    <p>ショット：スペースキー（押しっぱなしで連射）</p>
+                    <p>ポーズ：P キー</p>
+                </div>
+            </div>
+            <button id="start-btn">START GAME</button>
+        </div>
+
+        <!-- ポーズ画面 -->
+        <div id="pause-screen" class="screen hidden">
+            <h1>PAUSE</h1>
+            <button id="resume-btn">RESUME</button>
+            <button id="quit-btn">QUIT TO TITLE</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

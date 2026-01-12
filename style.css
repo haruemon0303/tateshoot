@@ -1,0 +1,325 @@
+/* リセットとベース設定 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #000;
+    color: #fff;
+}
+
+/* iPhoneのセーフエリア対応 */
+body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+/* ゲームコンテナ */
+#game-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+}
+
+/* ゲームキャンバス */
+#gameCanvas {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    background: #000;
+    touch-action: none;
+}
+
+/* UIレイヤー */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#ui-layer > * {
+    pointer-events: auto;
+}
+
+/* HUD（スコア、ライフ、ポーズボタン） */
+#hud {
+    position: absolute;
+    top: calc(20px + env(safe-area-inset-top));
+    left: 20px;
+    right: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    z-index: 100;
+}
+
+#score, #lives {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+#pause-btn {
+    background: rgba(255, 255, 0, 0.8);
+    border: 2px solid #fff;
+    color: #000;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#pause-btn:active {
+    background: rgba(255, 255, 0, 1);
+    transform: scale(0.95);
+}
+
+/* タッチコントロール */
+#touch-controls {
+    position: absolute;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+    left: 0;
+    right: 0;
+    height: 180px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 100;
+}
+
+#touch-controls > * {
+    pointer-events: auto;
+}
+
+/* PCでのキーボード操作時は非表示 */
+@media (hover: hover) and (pointer: fine) {
+    #touch-controls {
+        display: none;
+    }
+}
+
+/* バーチャルスティック */
+#virtual-joystick {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+
+#joystick-base {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100, 100, 100, 0.3), rgba(50, 50, 50, 0.5));
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+#joystick-stick {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8), rgba(200, 200, 200, 0.6));
+    border: 3px solid rgba(255, 255, 255, 0.9);
+    left: 40px;
+    top: 40px;
+    transition: all 0.1s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* ショットボタン */
+#shoot-btn {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 100, 100, 0.8), rgba(200, 50, 50, 0.7));
+    border: 4px solid rgba(255, 255, 255, 0.8);
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+    transition: all 0.1s;
+}
+
+#shoot-btn:active {
+    background: radial-gradient(circle, rgba(255, 150, 150, 1), rgba(255, 100, 100, 0.9));
+    transform: scale(0.95);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.8);
+}
+
+/* 画面オーバーレイ（スタート、ゲームオーバー、ポーズ） */
+.screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+    padding: 40px 20px;
+    gap: 20px;
+}
+
+.screen.hidden {
+    display: none;
+}
+
+.screen h1 {
+    font-size: 48px;
+    color: #ffff00;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.8);
+    margin-bottom: 10px;
+}
+
+.screen .subtitle {
+    font-size: 20px;
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.screen p {
+    font-size: 18px;
+    color: #fff;
+    margin: 5px 0;
+}
+
+.screen button {
+    padding: 15px 40px;
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+    background: linear-gradient(180deg, #ffff00, #ffcc00);
+    border: 3px solid #fff;
+    border-radius: 12px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.screen button:hover {
+    background: linear-gradient(180deg, #ffff66, #ffdd00);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+}
+
+.screen button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* 操作説明 */
+.instructions {
+    max-width: 500px;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.instructions h2 {
+    font-size: 24px;
+    color: #ffff00;
+    margin-bottom: 20px;
+}
+
+.control-section {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+}
+
+.control-section h3 {
+    font-size: 18px;
+    color: #00ffff;
+    margin-bottom: 10px;
+}
+
+.control-section p {
+    font-size: 14px;
+    color: #ccc;
+    margin: 5px 0;
+}
+
+/* ファイナルスコア */
+#final-score {
+    color: #ffff00;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+/* レスポンシブ調整 */
+@media (max-width: 480px) {
+    .screen h1 {
+        font-size: 36px;
+    }
+
+    .instructions {
+        font-size: 14px;
+    }
+
+    .screen button {
+        padding: 12px 30px;
+        font-size: 18px;
+    }
+}
+
+/* 横画面時の調整 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .screen h1 {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    .screen .subtitle {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .instructions {
+        margin: 10px 0;
+    }
+
+    .control-section {
+        padding: 10px;
+        margin: 10px 0;
+    }
+
+    .screen button {
+        padding: 10px 25px;
+        font-size: 16px;
+        margin: 5px;
+    }
+}
