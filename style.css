@@ -120,6 +120,23 @@ body {
     z-index: 101;
 }
 
+/* デバッグHUD（リアルタイム状態） */
+#debug-hud {
+    position: absolute;
+    top: calc(140px + env(safe-area-inset-top));
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ff0;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 10px;
+    font-family: 'Courier New', monospace;
+    max-width: 320px;
+    pointer-events: none;
+    z-index: 101;
+    line-height: 1.4;
+}
+
 /* タッチコントロール */
 #touch-controls {
     position: absolute;

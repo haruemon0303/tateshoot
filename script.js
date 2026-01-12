@@ -498,20 +498,34 @@ document.addEventListener('keyup', (e) => {
 });
 
 function updateKeyboardInput() {
-    input.moveX = 0;
-    input.moveY = 0;
+    // キーボード入力がある場合のみ移動入力を上書き
+    const hasKeyboardMoveInput = input.keys['arrowleft'] || input.keys['arrowright'] ||
+                                  input.keys['arrowup'] || input.keys['arrowdown'] ||
+                                  input.keys['a'] || input.keys['d'] || input.keys['w'] || input.keys['s'];
 
-    if (input.keys['arrowleft'] || input.keys['a']) input.moveX = -1;
-    if (input.keys['arrowright'] || input.keys['d']) input.moveX = 1;
-    if (input.keys['arrowup'] || input.keys['w']) input.moveY = -1;
-    if (input.keys['arrowdown'] || input.keys['s']) input.moveY = 1;
+    if (hasKeyboardMoveInput) {
+        input.moveX = 0;
+        input.moveY = 0;
 
-    input.shooting = input.keys[' '];
+        if (input.keys['arrowleft'] || input.keys['a']) input.moveX = -1;
+        if (input.keys['arrowright'] || input.keys['d']) input.moveX = 1;
+        if (input.keys['arrowup'] || input.keys['w']) input.moveY = -1;
+        if (input.keys['arrowdown'] || input.keys['s']) input.moveY = 1;
 
-    // 斜め移動の速度調整
-    if (input.moveX !== 0 && input.moveY !== 0) {
-        input.moveX *= 0.707;
-        input.moveY *= 0.707;
+        // 斜め移動の速度調整
+        if (input.moveX !== 0 && input.moveY !== 0) {
+            input.moveX *= 0.707;
+            input.moveY *= 0.707;
+        }
+    }
+    // キーボード入力がない場合は、タッチ入力を保持（上書きしない）
+
+    // スペースキーでのショット入力
+    if (input.keys[' ']) {
+        input.shooting = true;
+    } else if (!shootPointerId) {
+        // スペースキーもタッチも押されていない場合のみfalseに
+        input.shooting = false;
     }
 }
 
@@ -520,6 +534,7 @@ function updateKeyboardInput() {
 // ========================================
 
 const debugLog = document.getElementById('debug-log');
+const debugHUD = document.getElementById('debug-hud');
 let debugMessages = [];
 
 function addDebugLog(message) {
@@ -530,6 +545,20 @@ function addDebugLog(message) {
     if (debugLog) {
         debugLog.innerHTML = debugMessages.join('<br>');
     }
+}
+
+function updateDebugHUD() {
+    if (!debugHUD) return;
+
+    const info = [
+        `vx: ${input.moveX.toFixed(2)}  vy: ${input.moveY.toFixed(2)}`,
+        `shooting: ${input.shooting}`,
+        `bullets: ${bullets.length}`,
+        `player: (${Math.floor(player.x)}, ${Math.floor(player.y)})`,
+        `gameState: ${gameState}`
+    ];
+
+    debugHUD.innerHTML = info.join('<br>');
 }
 
 // ========================================
@@ -558,6 +587,7 @@ function handleJoystickStart(clientX, clientY, pointerId) {
 function handleJoystickMove(clientX, clientY, pointerId) {
     if (joystickActive && (joystickPointerId === null || joystickPointerId === pointerId)) {
         updateJoystick(clientX, clientY);
+        // MOVE イベントは頻繁なので、ログには出さない（HUDで確認）
     }
 }
 
@@ -805,6 +835,9 @@ function gameLoop(currentTime) {
         drawPowerUps();
         player.draw();
     }
+
+    // デバッグHUD更新（常に表示）
+    updateDebugHUD();
 }
 
 // ========================================
